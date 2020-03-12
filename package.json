@@ -16,8 +16,8 @@
     "watch": "webpack --config ./webpack.renderer.js --mode development --watch --watch-poll"
   },
   "build": {
-    "appId": "org.jitsi.jitsi-meet",
-    "productName": "Jitsi Meet",
+    "appId": "com.detaysoft.detay-meet",
+    "productName": "Detay Meet",
     "generateUpdatesFilesForAllChannels": true,
     "files": [
       "**/*",
@@ -26,15 +26,16 @@
       "!main.js"
     ],
     "mac": {
-      "artifactName": "jitsi-meet.${ext}",
+      "artifactName": "detay-meet.${ext}",
       "category": "public.app-category.video",
-      "darkModeSupport": true
+      "darkModeSupport": true,
+      "target": "pkg"
     },
     "linux": {
-      "artifactName": "jitsi-meet-${arch}.${ext}",
+      "artifactName": "detay-meet-${arch}.${ext}",
       "category": "VideoConference;AudioVideo;Audio;Video;Network",
-      "description": "Jitsi Meet Desktop App",
-      "executableName": "jitsi-meet",
+      "description": "Detay Meet Desktop App",
+      "executableName": "detay-meet",
       "target": [
         {
           "arch": "x64",
@@ -43,7 +44,7 @@
       ]
     },
     "win": {
-      "artifactName": "jitsi-meet.${ext}",
+      "artifactName": "detay-meet.${ext}",
       "target": [
         {
           "arch": [
