@@ -6,6 +6,8 @@ import { SpotlightTarget } from '@atlaskit/onboarding';
 import Page from '@atlaskit/page';
 import { AtlasKitThemeProvider } from '@atlaskit/theme';
 
+import { ipcRenderer } from 'electron';
+
 import React, { Component } from 'react';
 import type { Dispatch } from 'redux';
 import { connect } from 'react-redux';
@@ -82,6 +84,7 @@ class Welcome extends Component<Props, State> {
      */
     componentDidMount() {
         this.props.dispatch(startOnboarding('welcome-page'));
+        ipcRenderer.send('conference-mount-status', false);
     }
 
     /**

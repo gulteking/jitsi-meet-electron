@@ -1,5 +1,7 @@
 // @flow
 
+import { ipcRenderer } from 'electron';
+
 import Spinner from '@atlaskit/spinner';
 
 import React, { Component } from 'react';
@@ -72,6 +74,7 @@ type State = {
      * If the conference is loading or not.
      */
     isLoading: boolean;
+    isQuit: boolean;
 };
 
 /**
@@ -107,7 +110,8 @@ class Conference extends Component<Props, State> {
         super();
 
         this.state = {
-            isLoading: true
+            isLoading: true,
+            isQuit: false
         };
 
         this._ref = React.createRef();
@@ -189,6 +193,9 @@ class Conference extends Component<Props, State> {
         }
         if (this._api) {
             this._api.dispose();
+        }
+        if (this.state.isQuit) {
+            ipcRenderer.send('app-quit');
         }
     }
 
@@ -277,6 +284,26 @@ class Conference extends Component<Props, State> {
                 this._onVideoConferenceJoined(conferenceInfo);
             }
         );
+        this._api.on('cameraError', this.handleDeviceError);
+        this._api.on('micError', this.handleDeviceError);
+
+        ipcRenderer.send('conference-mount-status', true);
+        ipcRenderer.on('handle-close-click', () => {
+            this.setState({ isQuit: true }, () => {
+                this._api.executeCommand('hangup');
+            });
+        });
+    }
+
+    /**
+     * Handles camera and microphone access errors.
+     *
+     * @param {Error} error - Device error parameter.
+     * @returns {void}
+     */
+    handleDeviceError(error) {
+        console.log('Media error: ', error);
+        ipcRenderer.send('app-device-error');
     }
 
     _onVideoConferenceEnded: (*) => void;

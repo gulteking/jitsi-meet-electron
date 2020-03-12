@@ -4,7 +4,9 @@ const {
     BrowserWindow,
     Menu,
     app,
-    shell
+    shell,
+    ipcMain,
+    dialog
 } = require('electron');
 const isDev = require('electron-is-dev');
 const { autoUpdater } = require('electron-updater');
@@ -42,6 +44,7 @@ if (isDev) {
  * acidentally.
  */
 let mainWindow = null;
+let conferenceIsMount = false;
 
 /**
  * Sets the application menu. It is hidden on all platforms except macOS because
@@ -161,11 +164,32 @@ function createJitsiMeetWindow() {
             shell.openExternal(url);
         }
     });
+    mainWindow.on('close', event => {
+        if (conferenceIsMount) {
+            mainWindow.webContents.send('handle-close-click');
+            event.preventDefault();
+        }
+    });
     mainWindow.on('closed', () => {
         mainWindow = null;
     });
     mainWindow.once('ready-to-show', () => {
         mainWindow.show();
+    });
+
+    ipcMain.on('conference-mount-status', (event, conferenceMountStatus) => {
+        conferenceIsMount = conferenceMountStatus;
+    });
+    ipcMain.on('app-quit', () => {
+        app.quit();
+        process.exit(0);
+    });
+
+    ipcMain.on('app-device-error', () => {
+        dialog.showMessageBox(mainWindow, {
+            type: 'error',
+            message: 'Unable to access your devices. Please restart your computer!'
+        });
     });
 }
 
